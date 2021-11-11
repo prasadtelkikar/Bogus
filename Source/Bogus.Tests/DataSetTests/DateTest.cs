@@ -352,5 +352,138 @@ namespace Bogus.Tests.DataSetTests
       {
          date.TimeZoneString().Should().Be("Asia/Yerevan");
       }
+
+#if NET6_0
+      [Fact]
+      public void can_get_dateOnly_in_past()
+      {
+         var starting = DateTime.Parse("9/11/2021 00:00:00");
+         var startingDateOnly = DateOnly.FromDateTime(starting);
+         var resultantDateTime = date.PastDateOnly(refDateOnly: startingDateOnly).ToDateTime(default);
+         resultantDateTime.Should()
+            .BeOnOrBefore(starting)
+            .And
+            .BeOnOrAfter(starting.AddYears(-1));
+      }
+
+      [Fact]
+      public void can_get_dateOnly_in_past_with_custom_options()
+      {
+         var starting = DateTime.Parse("9/11/2021 00:00:00", CultureInfo.InvariantCulture);
+         var startingDateOnly = DateOnly.FromDateTime(starting);
+         var resultantDateTime = date.PastDateOnly(refDateOnly: startingDateOnly, yearsToGoBack: 5).ToDateTime(default);
+         resultantDateTime.Should()
+            .BeOnOrBefore(starting)
+            .And
+            .BeOnOrAfter(starting.AddYears(-5));
+      }
+
+      [Fact]
+      public void get_a_dateOnly_that_will_happen_soon()
+      {
+         var now = DateTime.Now;
+         date.SoonDateOnly(3).ToDateTime(default).Should().BeAfter(now).And.BeBefore(now.AddDays(3));
+      }
+
+      [Fact]
+      public void can_get_dateOnly_in_future()
+      {
+         var starting = DateTime.Parse("9/11/2021 00:00:00");
+         var startingDateOnly = DateOnly.FromDateTime(starting);
+         var resultantDateTime = date.FutureDateOnly(refDateOnly: startingDateOnly).ToDateTime(default);
+         resultantDateTime.Should()
+            .BeOnOrBefore(starting.AddYears(1))
+            .And
+            .BeOnOrAfter(starting);
+      }
+
+      [Fact]
+      public void can_get_dateOnly_in_future_with_options()
+      {
+         var starting = DateTime.Parse("9/11/2021 00:00:00", CultureInfo.InvariantCulture);
+         var startingDateOnly = DateOnly.FromDateTime(starting);
+         var resultantDateTime = date.FutureDateOnly(refDateOnly: startingDateOnly, yearsToGoForward: 5).ToDateTime(default);
+         resultantDateTime.Should()
+            .BeOnOrBefore(starting.AddYears(5))
+            .And
+            .BeOnOrAfter(starting);
+      }
+
+      [Fact]
+      public void can_get_random_dateOnly_between_two_dates()
+      {
+         var start = DateTime.Parse("08/08/2021 00:00:00", CultureInfo.InvariantCulture);
+         var end = DateTime.Parse("12/12/2021 00:00:00", CultureInfo.InvariantCulture);
+
+         var startDateOnly = DateOnly.FromDateTime(start);
+         var endDateOnly = DateOnly.FromDateTime(end);
+
+         date.BetweenDateOnly(startDateOnly, endDateOnly).ToDateTime(default)
+            .Should()
+            .BeOnOrAfter(start)
+            .And
+            .BeOnOrBefore(end);
+
+         //and reverse...
+         date.BetweenDateOnly(endDateOnly, startDateOnly).ToDateTime(default)
+            .Should()
+            .BeOnOrAfter(start)
+            .And
+            .BeOnOrBefore(end);
+      }
+
+      [Fact]
+      public void can_get_dateOnly_recently_within_the_year()
+      {
+         var start = DateTime.Now;
+         date.RecentDateOnly().ToDateTime(default)
+            .Should()
+            .BeOnOrBefore(start)
+            .And
+            .BeOnOrAfter(start.AddDays(-1));
+      }
+
+      [Fact]
+      public void can_get_random_timeOnly_between_two_dates()
+      {
+         var start = DateTime.Parse("08/08/2021 00:00:00 AM", CultureInfo.InvariantCulture);
+         var end = DateTime.Parse("12/12/2021 10:00:00 PM", CultureInfo.InvariantCulture);
+
+         var startTimeOnly = TimeOnly.FromDateTime(start);
+         var endTimeOnly = TimeOnly.FromDateTime(end);
+
+         var betweenTime = date.BetweenTimeOnly(startTimeOnly, endTimeOnly);
+         betweenTime.IsBetween(startTimeOnly, endTimeOnly).Should().BeTrue();
+
+         //and reverse should be negative...
+         var reverseBetweenTime = date.BetweenTimeOnly(endTimeOnly, startTimeOnly);
+         reverseBetweenTime.IsBetween(endTimeOnly, startTimeOnly).Should().BeFalse();
+
+      }
+
+      [Fact]
+      public void can_get_a_timeOnly_that_will_happen_soon()
+      {
+         var now = DateTime.Now;
+         
+         var soonTimeSpan = date.SoonTimeOnly(5).ToTimeSpan();
+         var soonDateTime = now.Date+soonTimeSpan;
+
+         soonDateTime.Should().BeAfter(now).And.BeBefore(now.AddMinutes(5));
+
+      }
+
+      [Fact]
+      public void can_get_a_timeOnly_that_happened_in_past()
+      {
+         var now = DateTime.Now;
+         
+         var recentTimeStamp = date.RecentTimeOnly(5).ToTimeSpan();
+         var recentDateTime = now.Date+recentTimeStamp;
+
+         recentDateTime.Should().BeBefore(now).And.BeAfter(now.AddMinutes(-5));
+
+      }
+#endif
    }
 }
