@@ -76,11 +76,11 @@ namespace Bogus.Tests
             if (call == "#ctor") continue;
 
             var r = new Record
-               {
-                  Dataset = dataset,
-                  Method = call,
-                  Summary = summary
-               };
+            {
+               Dataset = dataset,
+               Method = call,
+               Summary = summary
+            };
             list.Add(r);
          }
 
@@ -102,7 +102,7 @@ namespace Bogus.Tests
             if( !datasets.ContainsKey(g.Key) ) return; //check if it's accessible
             var methods = datasets[g.Key];
 
-            var distinctMethods = g.DistinctBy(u => u.Method);
+            var distinctMethods = MoreEnumerable.DistinctBy(g, u => u.Method);
 
             output.WriteLine("* **`" + g.Key + "`**");
             foreach( var m in distinctMethods )
@@ -178,16 +178,17 @@ namespace Bogus.Tests
          var publicMethods = typeof(Randomizer)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             .Select(mi => new {dataset = mi.DeclaringType.Name, method = mi.Name});
-            //.GroupBy(g => g.dataset, u => u.method)
-            //.ToDictionary(g => g.Key);
+         //.GroupBy(g => g.dataset, u => u.method)
+         //.ToDictionary(g => g.Key);
 
          foreach (var g in all)
          {
             //if (!datasets.ContainsKey(g.Key)) return; //check if it's accessible
-            var distinctMethods = g
+            var sortedMethods = g
                .OrderBy(x => x.Method)
-               .ThenBy(x => x.Summary.Length)
-               .DistinctBy(u => u.Method);
+               .ThenBy(x => x.Summary.Length);
+            var distinctMethods = MoreEnumerable.DistinctBy(sortedMethods, u => u.Method);
+
             //we need to do this ordering so we select the most
             //succinct description for any method overloads.
 

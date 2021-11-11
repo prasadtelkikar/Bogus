@@ -60,7 +60,7 @@ namespace Bogus.Tests.GitHubIssues
             .Should().Be("fr");
       }
 
-
+#if !NET6_0
       [Fact]
       public void nb_NO_locale()
       {
@@ -84,7 +84,7 @@ namespace Bogus.Tests.GitHubIssues
             .ToBogusLocale()
             .Should().Be("nb_NO");
       }
-
+#endif
 
       [Fact]
       public void id_ID_locale()

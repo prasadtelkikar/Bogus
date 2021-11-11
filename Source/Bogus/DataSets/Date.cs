@@ -263,5 +263,133 @@ namespace Bogus.DataSets
       {
          return GetRandomArrayItem("address", "time_zone");
       }
+#if NET6_0
+      /// <summary>
+      /// Get a <see cref="DateOnly"/> in the past between <paramref name="refDateOnly"/> and <paramref name="yearsToGoBack"/>.
+      /// </summary>
+      /// <param name="yearsToGoBack">Years to go back from <paramref name="refDateOnly"/>. Default is 1 year.</param>
+      /// <param name="refDateOnly">The only date to start calculations. Default is the only Date from <see cref="DateTime.Now"/>.</param>
+      public DateOnly PastDateOnly(int yearsToGoBack = 1, DateOnly? refDateOnly = null)
+      {
+         var dateTime = refDateOnly?.ToDateTime(default) ?? SystemClock();
+         
+         var dtTimePast = Past(yearsToGoBack, dateTime);
+         
+         return DateOnly.FromDateTime(dtTimePast);
+      }
+
+      /// <summary>
+      /// Get a <see cref="DateOnly"/> that will happen soon.
+      /// </summary>
+      /// <param name="days">A date no more than <paramref name="days"/> ahead.</param>
+      /// <param name="refDateOnly">The date to start calculations. Default is the only date from <see cref="DateTimeOffset.Now"/>.</param>
+      public DateOnly SoonDateOnly(int days = 1, DateOnly? refDateOnly = null)
+      {
+         var dateTime = refDateOnly?.ToDateTime(default) ?? SystemClock();
+
+         var dtTimePast = Soon(days, dateTime);
+
+         return DateOnly.FromDateTime(dtTimePast);
+      }
+
+      /// <summary>
+      /// Get a <see cref="DateOnly"/> in the future between <paramref name="refDateOnly"/> and <paramref name="yearsToGoForward"/>.
+      /// </summary>
+      /// <param name="yearsToGoForward">Years to go forward from <paramref name="refDateOnly"/>. Default is 1 year.</param>
+      /// <param name="refDateOnly">The only date to start calculations. Default is the only date from <see cref="DateTimeOffset.Now"/>.</param>
+      public DateOnly FutureDateOnly(int yearsToGoForward = 1, DateOnly? refDateOnly = null)
+      {
+         var dateTime = refDateOnly?.ToDateTime(default) ?? SystemClock();
+
+         var dtTimePast = Future(yearsToGoForward, dateTime);
+
+         return DateOnly.FromDateTime(dtTimePast);
+      }
+
+      /// <summary>
+      /// Get a random <see cref="DateOnly"/> between <paramref name="start"/> and <paramref name="end"/>.
+      /// </summary>
+      /// <param name="start">Start Date - The returned <seealso cref="DateOnly"/> is used from this parameter.</param>
+      /// <param name="end">End Date</param>
+      public DateOnly BetweenDateOnly(DateOnly start, DateOnly end)
+      {
+         var startDateTime = start.ToDateTime(default);
+         var endDateTime = end.ToDateTime(default);
+
+         var resultantDateTime = Between(startDateTime, endDateTime);
+
+         return DateOnly.FromDateTime(resultantDateTime);
+      }
+
+      /// <summary>
+      /// Get a random <see cref="DateOnly"/> within the last few days.
+      /// </summary>
+      /// <param name="days">Number of days to go back.</param>
+      /// <param name="refDateOnly">The date to start calculations. Default is the only date from <see cref="DateTimeOffset.Now"/>.</param>
+      public DateOnly RecentDateOnly(int days = 1, DateOnly? refDateOnly = null)
+      {
+         var dateTime = refDateOnly?.ToDateTime(default) ?? SystemClock();
+
+         var resultantDateTime = Recent(days, dateTime);
+         
+         return DateOnly.FromDateTime(resultantDateTime);
+      }
+
+      /// <summary>
+      /// Get a random <see cref="TimeOnly"/> between <paramref name="start"/> and <paramref name="end"/>.
+      /// </summary>
+      /// <param name="start">Start time</param>
+      /// <param name="end">End time</param>
+      /// <param name="dateTimeKind">Representation of DateTime. Default is <seealso cref="DateTimeKind.Local"/></param>
+      public TimeOnly BetweenTimeOnly(TimeOnly start, TimeOnly end, DateTimeKind dateTimeKind = DateTimeKind.Local)
+      {
+         var minTicks = Math.Min(start.Ticks, end.Ticks);
+         var maxTicks = Math.Max(start.Ticks, end.Ticks);
+
+         var totalTimeSpanTicks = maxTicks - minTicks;
+
+         var partTimeSpan = RandomTimeSpanFromTicks(totalTimeSpanTicks);
+
+         var resultantDate = new DateTime(minTicks, dateTimeKind) + partTimeSpan;
+
+         return TimeOnly.FromDateTime(resultantDate);
+      }
+
+      /// <summary>
+      /// Get a <see cref="TimeOnly"/> that will happen soon.
+      /// </summary>
+      /// <param name="mins">Minutes no more than <paramref name="mins"/> ahead.</param>
+      /// <param name="refTimeOnly">The Time to start calculations. Default is the only time from <see cref="DateTime.Now"/>.</param>
+      public TimeOnly SoonTimeOnly(int mins = 1, TimeOnly? refTimeOnly = null)
+      {
+         var timeOnly = refTimeOnly ?? TimeOnly.FromDateTime(DateTime.Now);
+
+         var dateTime = DateTime.Now.Date + timeOnly.ToTimeSpan();
+         
+         var dtTimeSoon = Between(dateTime, dateTime.AddMinutes(mins));
+         
+         return TimeOnly.FromDateTime(dtTimeSoon);
+      }
+
+      /// <summary>
+      /// Get a random <see cref="TimeOnly"/> within the last few Minutes.
+      /// </summary>
+      /// <param name="mins">Minutes <paramref name="mins"/> of the day to go back.</param>
+      /// <param name="refTimeOnly">The Time to start calculations. Default is the time from <see cref="DateTime.Now"/>.</param>
+      public TimeOnly RecentTimeOnly(int mins = 1, TimeOnly? refTimeOnly = null)
+      {
+         var maxDate = SystemClock();
+
+         var minDate = maxDate.AddMinutes(-mins);
+
+         var totalTimeSpanTicks = (maxDate - minDate).Ticks;
+
+         var partTimeSpan = RandomTimeSpanFromTicks(totalTimeSpanTicks);
+         
+         var pastTimeCal = maxDate - partTimeSpan;
+         
+         return TimeOnly.FromDateTime(pastTimeCal);
+      }
+#endif
    }
 }
