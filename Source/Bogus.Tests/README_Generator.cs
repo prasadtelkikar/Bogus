@@ -76,11 +76,11 @@ namespace Bogus.Tests
             if (call == "#ctor") continue;
 
             var r = new Record
-            {
-               Dataset = dataset,
-               Method = call,
-               Summary = summary
-            };
+               {
+                  Dataset = dataset,
+                  Method = call,
+                  Summary = summary
+               };
             list.Add(r);
          }
 
@@ -178,8 +178,8 @@ namespace Bogus.Tests
          var publicMethods = typeof(Randomizer)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             .Select(mi => new {dataset = mi.DeclaringType.Name, method = mi.Name});
-         //.GroupBy(g => g.dataset, u => u.method)
-         //.ToDictionary(g => g.Key);
+            //.GroupBy(g => g.dataset, u => u.method)
+            //.ToDictionary(g => g.Key);
 
          foreach (var g in all)
          {

@@ -10,7 +10,7 @@ namespace Bogus.Tests.DataSetTests
    {
       public DateTest()
       {
-         date = new Date();         
+         date = new Date();
       }
 
       private readonly Date date;
@@ -432,7 +432,7 @@ namespace Bogus.Tests.DataSetTests
             .BeOnOrBefore(end);
       }
 
-	  [Fact]
+      [Fact]
       public void can_get_dateOnly_recently_within_the_year()
       {
          var start = DateTime.Now;
@@ -442,7 +442,6 @@ namespace Bogus.Tests.DataSetTests
             .And
             .BeOnOrAfter(start.AddDays(-1));
       }
-
 
       [Fact]
       public void can_get_random_timeOnly_between_two_dates()
